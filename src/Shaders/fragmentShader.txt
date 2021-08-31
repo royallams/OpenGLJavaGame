@@ -1,0 +1,12 @@
+#version 330 core
+
+in vec2 pass_textureCoords;
+
+out vec4 out_Color;
+
+
+uniform sampler2D textureSampler;
+
+void main(){
+    out_Color = texture(textureSampler, pass_textureCoords);// Return the color of the pixel at the coordinate.. sample it at the texture coordinates.
+}

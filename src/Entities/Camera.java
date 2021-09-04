@@ -19,6 +19,9 @@ public class Camera {
         if (Input.isKeyDown(GLFW.GLFW_KEY_W)){
             position.z -= 0.02f;
         }
+        if (Input.isKeyDown(GLFW.GLFW_KEY_S)){
+            position.z += 0.02f;
+        }
         if (Input.isKeyDown(GLFW.GLFW_KEY_D)){
             position.x += 0.02f;
         }

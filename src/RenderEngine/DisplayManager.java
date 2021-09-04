@@ -1,14 +1,18 @@
 package RenderEngine;
 
 
+        import Entities.Camera;
+        import Entities.Entity;
         import Models.RawModel;
         import Models.TexturedModel;
         import Shaders.StaticShader;
         import Textures.ModelTexture;
+        import ToolSet.Input;
         import org.lwjgl.*;
         import org.lwjgl.glfw.*;
         import org.lwjgl.opengl.*;
         import org.lwjgl.system.*;
+        import org.lwjgl.util.vector.Vector3f;
 
         import java.nio.*;
 
@@ -22,6 +26,10 @@ public class DisplayManager {
 
     // The window handle
     private long window;
+    static IntBuffer pWidth_;
+    static IntBuffer pHeight_;
+
+    static Input input;
 
     public void run() {
         System.out.println("Hello LWJGL " + Version.getVersion() + "!");
@@ -38,6 +46,7 @@ public class DisplayManager {
         glfwSetErrorCallback(null).free();
     }
 
+
     private void init() {
         // Setup an error callback. The default implementation
         // will print the error message in System.err.
@@ -46,6 +55,10 @@ public class DisplayManager {
         // Initialize GLFW. Most GLFW functions will not work before doing this.
         if ( !glfwInit() )
             throw new IllegalStateException("Unable to initialize GLFW");
+
+        // Input
+        input = new Input();
+
 
         // Configure GLFW
         glfwDefaultWindowHints(); // optional, the current window hints are already the default
@@ -67,6 +80,7 @@ public class DisplayManager {
                 glfwSetWindowShouldClose(window, true); // We will detect this in the rendering loop
         });
 
+
         // Get the thread stack and push a new frame
         try ( MemoryStack stack = stackPush() ) {
             IntBuffer pWidth = stack.mallocInt(1); // int*
@@ -74,6 +88,9 @@ public class DisplayManager {
 
             // Get the window size passed to glfwCreateWindow
             glfwGetWindowSize(window, pWidth, pHeight);
+
+            pWidth_ = pWidth;
+            pHeight_ = pHeight;
 
             // Get the resolution of the primary monitor
             GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
@@ -88,6 +105,15 @@ public class DisplayManager {
 
         // Make the OpenGL context current
         glfwMakeContextCurrent(window);
+
+
+        GLFW.glfwSetKeyCallback(window,input.getKeyboardCallback());
+        GLFW.glfwSetCursorPosCallback(window,input.getMouseMoveCallBack());
+        GLFW.glfwSetMouseButtonCallback(window,input.getMouseButtonsCallBack());
+
+
+
+
         // Enable v-sync
         glfwSwapInterval(1);
 
@@ -108,44 +134,107 @@ public class DisplayManager {
 
 
         Loader loader = new Loader();
-        Renderer renderer = new Renderer();
         StaticShader shader = new StaticShader();
+        Renderer renderer = new Renderer(shader);
 
         float[] vertices = {
-                -0.5f,0.5f,0,   //V0
-                -0.5f,-0.5f,0,  //V1
-                0.5f,-0.5f,0,   //V2
-                0.5f,0.5f,0     //V3
+                -0.5f,0.5f,-0.5f,
+                -0.5f,-0.5f,-0.5f,
+                0.5f,-0.5f,-0.5f,
+                0.5f,0.5f,-0.5f,
+
+                -0.5f,0.5f,0.5f,
+                -0.5f,-0.5f,0.5f,
+                0.5f,-0.5f,0.5f,
+                0.5f,0.5f,0.5f,
+
+                0.5f,0.5f,-0.5f,
+                0.5f,-0.5f,-0.5f,
+                0.5f,-0.5f,0.5f,
+                0.5f,0.5f,0.5f,
+
+                -0.5f,0.5f,-0.5f,
+                -0.5f,-0.5f,-0.5f,
+                -0.5f,-0.5f,0.5f,
+                -0.5f,0.5f,0.5f,
+
+                -0.5f,0.5f,0.5f,
+                -0.5f,0.5f,-0.5f,
+                0.5f,0.5f,-0.5f,
+                0.5f,0.5f,0.5f,
+
+                -0.5f,-0.5f,0.5f,
+                -0.5f,-0.5f,-0.5f,
+                0.5f,-0.5f,-0.5f,
+                0.5f,-0.5f,0.5f
+
         };
 
-        int[] indices ={
-            0,1,3,  //Top Left Triangle
-            3,1,2    // Bottom Right Triangle
+        float[] textureCoords = {
+
+                0,0,
+                0,1,
+                1,1,
+                1,0,
+                0,0,
+                0,1,
+                1,1,
+                1,0,
+                0,0,
+                0,1,
+                1,1,
+                1,0,
+                0,0,
+                0,1,
+                1,1,
+                1,0,
+                0,0,
+                0,1,
+                1,1,
+                1,0,
+                0,0,
+                0,1,
+                1,1,
+                1,0
+
+
         };
 
-        float[] textureCoords ={
-                0,0,    //V0
-                0,1,    //V1
-                1,1,    //V2
-                1,0     //V3
+        int[] indices = {
+                0, 1, 3,
+                3, 1, 2,
+                4, 5, 7,
+                7, 5, 6,
+                8, 9, 11,
+                11, 9, 10,
+                12, 13, 15,
+                15, 13, 14,
+                16, 17, 19,
+                19, 17, 18,
+                20, 21, 23,
+                23,21,22
         };
 
         RawModel model = loader.loadToVAO(vertices, textureCoords,indices);
         ModelTexture texture = new ModelTexture(loader.loadTexture("res/image1.jpeg"));
         TexturedModel texturedModel = new TexturedModel(model,texture);
-
-
+        Entity entity = new Entity(texturedModel, new Vector3f(0,0,-5),0,0,0,1);
+        Camera camera = new Camera();
+        Input input = new Input();
 
 
         // Run the rendering loop until the user has attempted to close
         // the window or has pressed the ESCAPE key.
         while ( !glfwWindowShouldClose(window) ) {
 //            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
-
-
+            entity.increaseRotation(1,1,0);
+            camera.move();
+            entity.increasePosition(0,0,-0.002f);
+//            entity.increaseRotation(0,0,-0.002f);
             renderer.prepare();
             shader.start();
-            renderer.render(texturedModel);
+            shader.loadViewMatrix(camera);
+            renderer.render(entity, shader);
             shader.stop();
             glfwSwapBuffers(window); // swap the color buffers
 
@@ -158,8 +247,15 @@ public class DisplayManager {
 
         shader.cleanUp();
         loader.cleanUp();
+        input.destroy();
+
     }
 
+    public static  IntBuffer getpWidth_() {
+        return pWidth_;
+    }
 
-
+    public static  IntBuffer getpHeight_() {
+        return pHeight_;
+    }
 }

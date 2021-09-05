@@ -70,7 +70,7 @@ public class DisplayManager {
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
         // Create the window
-        window = glfwCreateWindow(300, 300, "Hello World!", NULL, NULL);
+        window = glfwCreateWindow(1200, 720, "Hello World!", NULL, NULL);
         if ( window == NULL )
             throw new RuntimeException("Failed to create the GLFW window");
 
@@ -137,88 +137,11 @@ public class DisplayManager {
         StaticShader shader = new StaticShader();
         Renderer renderer = new Renderer(shader);
 
-        float[] vertices = {
-                -0.5f,0.5f,-0.5f,
-                -0.5f,-0.5f,-0.5f,
-                0.5f,-0.5f,-0.5f,
-                0.5f,0.5f,-0.5f,
 
-                -0.5f,0.5f,0.5f,
-                -0.5f,-0.5f,0.5f,
-                0.5f,-0.5f,0.5f,
-                0.5f,0.5f,0.5f,
-
-                0.5f,0.5f,-0.5f,
-                0.5f,-0.5f,-0.5f,
-                0.5f,-0.5f,0.5f,
-                0.5f,0.5f,0.5f,
-
-                -0.5f,0.5f,-0.5f,
-                -0.5f,-0.5f,-0.5f,
-                -0.5f,-0.5f,0.5f,
-                -0.5f,0.5f,0.5f,
-
-                -0.5f,0.5f,0.5f,
-                -0.5f,0.5f,-0.5f,
-                0.5f,0.5f,-0.5f,
-                0.5f,0.5f,0.5f,
-
-                -0.5f,-0.5f,0.5f,
-                -0.5f,-0.5f,-0.5f,
-                0.5f,-0.5f,-0.5f,
-                0.5f,-0.5f,0.5f
-
-        };
-
-        float[] textureCoords = {
-
-                0,0,
-                0,1,
-                1,1,
-                1,0,
-                0,0,
-                0,1,
-                1,1,
-                1,0,
-                0,0,
-                0,1,
-                1,1,
-                1,0,
-                0,0,
-                0,1,
-                1,1,
-                1,0,
-                0,0,
-                0,1,
-                1,1,
-                1,0,
-                0,0,
-                0,1,
-                1,1,
-                1,0
-
-
-        };
-
-        int[] indices = {
-                0, 1, 3,
-                3, 1, 2,
-                4, 5, 7,
-                7, 5, 6,
-                8, 9, 11,
-                11, 9, 10,
-                12, 13, 15,
-                15, 13, 14,
-                16, 17, 19,
-                19, 17, 18,
-                20, 21, 23,
-                23,21,22
-        };
-
-        RawModel model = loader.loadToVAO(vertices, textureCoords,indices);// Create VAO, VBO, Index buffers, and return the final rawmodel (VAO+numberofIndices)
-        ModelTexture texture = new ModelTexture(loader.loadTexture("res/image1.jpeg"));
-        TexturedModel texturedModel = new TexturedModel(model,texture);// SImply holds the information of the model and the texture data (VAO and the VBO ids)
-        Entity entity = new Entity(texturedModel, new Vector3f(0,0,-5),0,0,0,1);// Textured Model with its initial position, translate, rotate , scale value.
+        // Create VAO, VBO, Index buffers, and return the final rawmodel (VAO+numberofIndices)
+        RawModel model =  OBJLoader.loadObjModel("stall", loader);
+        TexturedModel staticModel = new TexturedModel(model,new ModelTexture(loader.loadTexture("stallTexture.png")));
+        Entity entity = new Entity(staticModel, new Vector3f(0,0,-50),0,0,0,1);// Textured Model with its initial position, translate, rotate , scale value.
         Camera camera = new Camera();
         Input input = new Input();// Creates static call back functions to handle keyboard, mouse and the cursor
 
@@ -227,9 +150,9 @@ public class DisplayManager {
         // the window or has pressed the ESCAPE key.
         while ( !glfwWindowShouldClose(window) ) {
 //            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
-            entity.increaseRotation(1,1,0);
-            camera.move();
-            entity.increasePosition(0,0,-0.002f);
+            entity.increaseRotation(0,1,0);
+//            camera.move();
+//            entity.increasePosition(0,0,-0.002f);
 //            entity.increaseRotation(0,0,-0.002f);
             renderer.prepare();
             shader.start();// Use the shader program

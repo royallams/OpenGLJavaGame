@@ -108,6 +108,7 @@ public class Loader {
     // Pass the file name and create Texture Buffer  and set defaults.
     public int loadTexture(String filename){
 
+        filename = "res/"+filename;
         int id = GL13.glGenTextures();
         GL13.glBindTexture(GL13.GL_TEXTURE_2D,id);
 

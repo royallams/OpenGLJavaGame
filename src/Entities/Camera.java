@@ -8,9 +8,9 @@ import java.awt.*;
 
 public class Camera {
     private Vector3f position = new Vector3f(0,0,0);
-    private float pitch;// Tell the up and down movement
-    private float yaw; // Tells the left and right movement
-    private float roll;
+    private float pitch = 0;// Tell the up and down movement
+    private float yaw = 0; // Tells the left and right movement
+    private float roll = 0;
 
 
 

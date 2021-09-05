@@ -3,6 +3,8 @@ package Entities;
 import Models.TexturedModel;
 import org.lwjgl.util.vector.Vector3f;
 
+
+// The details of the Textured model + transformation information of the entity .
 public class Entity {
 
     private TexturedModel model;
@@ -19,12 +21,14 @@ public class Entity {
         this.scale = scale;
     }
 
+    // Basically if we want to increase the position of the entity in the renderer
     public void increasePosition(float dx, float dy, float dz){
         this.position.x+=dx;
         this.position.y+=dy;
         this.position.z+=dz;
     }
 
+    // Basically if we want to increase the Rotation of the entity in the renderer
     public void increaseRotation(float dx, float dy, float dz){
         this.rotX += dx;
         this.rotY += dy;

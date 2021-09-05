@@ -7,6 +7,8 @@ import org.lwjgl.util.vector.Vector3f;
 
 import static java.lang.Math.*;
 
+
+// This class helps to create the transformation matrix, view matrix etc.
 public class Maths {
 
     public  static Matrix4f createTransformationMatrix(Vector3f translation,

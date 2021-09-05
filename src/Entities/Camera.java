@@ -8,25 +8,27 @@ import java.awt.*;
 
 public class Camera {
     private Vector3f position = new Vector3f(0,0,0);
-    private float pitch;
-    private float yaw;
+    private float pitch;// Tell the up and down movement
+    private float yaw; // Tells the left and right movement
     private float roll;
 
 
 
     public  void move() {
 
+        // Since we are moving the world , the values passed are negative of the actual value.
+
         if (Input.isKeyDown(GLFW.GLFW_KEY_W)){
-            position.z -= 0.02f;
+            position.z -= 0.02f; // Come Near
         }
         if (Input.isKeyDown(GLFW.GLFW_KEY_S)){
-            position.z += 0.02f;
+            position.z += 0.02f; //Go Far
         }
         if (Input.isKeyDown(GLFW.GLFW_KEY_D)){
-            position.x += 0.02f;
+            position.x -= 0.02f; //Go right
         }
         if (Input.isKeyDown(GLFW.GLFW_KEY_A)){
-            position.x -= 0.02f;
+            position.x += 0.02f;// Go Left
         }
     }
     public Vector3f getPosition() {

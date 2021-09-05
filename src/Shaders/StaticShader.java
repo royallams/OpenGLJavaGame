@@ -4,6 +4,7 @@ import Entities.Camera;
 import ToolSet.Maths;
 import org.lwjgl.util.vector.Matrix4f;
 
+//Implements the shaderprogram
 public class StaticShader extends ShaderProgram{
 
     private static final String VERTEX_FILE = "src/Shaders/vertexShader.txt";
@@ -15,7 +16,7 @@ public class StaticShader extends ShaderProgram{
 
     public StaticShader() {
         super(VERTEX_FILE, FRAGMENT_FILE);
-     }
+     }// THis creates the shader program
 
 
 

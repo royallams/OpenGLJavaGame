@@ -23,20 +23,28 @@ public abstract class ShaderProgram {
     public ShaderProgram(String vertexFile,String fragmentFile){
         vertexShaderID = loadShader(vertexFile,GL20.GL_VERTEX_SHADER);
         fragmentShaderID = loadShader(fragmentFile, GL20.GL_FRAGMENT_SHADER);
+        // Create the shader program and add all the created shaders
+        // Link the shader program and final validate the program
         programID = GL20.glCreateProgram();
         GL20.glAttachShader(programID,vertexShaderID);
         GL20.glAttachShader(programID,fragmentShaderID);
         bindAttributes();
         GL20.glLinkProgram(programID);
         GL20.glValidateProgram(programID);
+
+        // After Creating shader program , we need to get all the uniform locations from the GPU to the CPU
         getAllUniformLocations();
     }
 
-    protected abstract void getAllUniformLocations();
+    protected abstract void getAllUniformLocations();// This is kept pure virtual so that derived classes need to implement it to use the shader
 
+
+    // Common parent function to make it easy to read the uniforms.
     protected int getUniformLocation(String uniformName){
         return GL20.glGetUniformLocation(programID, uniformName);
     }
+
+    // Use the shader program finally
     public void start(){
         GL20.glUseProgram(programID);
     }
@@ -86,6 +94,9 @@ public abstract class ShaderProgram {
         GL20.glUniformMatrix4fv(location, false, matrixBuffer);
 
     }
+
+
+    // Read the shader file and compile based on the type of the shader.Return the final compiled shader id.
     private static int loadShader(String file, int type){
         StringBuilder shaderSource = new StringBuilder();
 

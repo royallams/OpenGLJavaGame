@@ -21,6 +21,7 @@ public class Renderer {
 
     private  Matrix4f projectionMatrix;
 
+    // To make it look like 3d .Projection matrix is important /
     public Renderer(StaticShader shader){
         createProjectionMatrix();
         shader.start();
@@ -29,7 +30,7 @@ public class Renderer {
     }
 
 
-    public void prepare(){
+    public void prepare(){// These are for clear the buffers and preparing initial state for rendering
         GL11.glEnable(GL_DEPTH_TEST); // clear the framebuffer
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT| GL11.GL_DEPTH_BUFFER_BIT);
         GL11.glClearColor(1,0,0,1);
@@ -37,6 +38,7 @@ public class Renderer {
 
     }
 
+    // First already the VIew Matrix is applied, now transformation matrix shall be applied.
     public void render(Entity entity, StaticShader shader){
         TexturedModel model = entity.getModel();
         RawModel rawModel = model.getRawModel();
@@ -47,12 +49,17 @@ public class Renderer {
         shader.loadTransformationMatrix(transformationMatrix);
         GL13.glActiveTexture(GL13.GL_TEXTURE0);
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, model.getTexture().getTextureID() );
-        GL11.glDrawElements(GL11.GL_TRIANGLES,rawModel.getVertexCount(), GL_UNSIGNED_INT,0);
+        GL11.glDrawElements(GL11.GL_TRIANGLES,rawModel.getVertexCount(), GL_UNSIGNED_INT,0);//Vertex count is actually an indices count here.
         GL20.glDisableVertexAttribArray(0);
         GL20.glDisableVertexAttribArray(1);
-        GL30.glBindVertexArray(0);
+        GL30.glBindVertexArray(0);//Unbind all buffers after every use.
     }
 
+
+    // These are the steps to Create projection matrix.
+    // The inputs are
+    // Window's width, height
+    // Field of View , Near plane, Far Plane
     private void  createProjectionMatrix(){
         float aspectRatio = (float) DisplayManager.getpHeight_().get(0)/(float)DisplayManager.getpHeight_().get(0);
         float y_scale = (float) ((1f/Math.tan(Math.toRadians(FOV/2f))))*aspectRatio;

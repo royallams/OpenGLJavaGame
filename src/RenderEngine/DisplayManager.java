@@ -215,12 +215,12 @@ public class DisplayManager {
                 23,21,22
         };
 
-        RawModel model = loader.loadToVAO(vertices, textureCoords,indices);
+        RawModel model = loader.loadToVAO(vertices, textureCoords,indices);// Create VAO, VBO, Index buffers, and return the final rawmodel (VAO+numberofIndices)
         ModelTexture texture = new ModelTexture(loader.loadTexture("res/image1.jpeg"));
-        TexturedModel texturedModel = new TexturedModel(model,texture);
-        Entity entity = new Entity(texturedModel, new Vector3f(0,0,-5),0,0,0,1);
+        TexturedModel texturedModel = new TexturedModel(model,texture);// SImply holds the information of the model and the texture data (VAO and the VBO ids)
+        Entity entity = new Entity(texturedModel, new Vector3f(0,0,-5),0,0,0,1);// Textured Model with its initial position, translate, rotate , scale value.
         Camera camera = new Camera();
-        Input input = new Input();
+        Input input = new Input();// Creates static call back functions to handle keyboard, mouse and the cursor
 
 
         // Run the rendering loop until the user has attempted to close
@@ -232,10 +232,10 @@ public class DisplayManager {
             entity.increasePosition(0,0,-0.002f);
 //            entity.increaseRotation(0,0,-0.002f);
             renderer.prepare();
-            shader.start();
-            shader.loadViewMatrix(camera);
+            shader.start();// Use the shader program
+            shader.loadViewMatrix(camera);// This takes the camera , camera information is the View, through that it creates a view matrix and loads it to the GPU. uniform
             renderer.render(entity, shader);
-            shader.stop();
+            shader.stop();// Dont use the shader program
             glfwSwapBuffers(window); // swap the color buffers
 
 
@@ -247,7 +247,7 @@ public class DisplayManager {
 
         shader.cleanUp();
         loader.cleanUp();
-        input.destroy();
+        input.destroy();//Cleanup callback buffers after use. This is not a static function.
 
     }
 

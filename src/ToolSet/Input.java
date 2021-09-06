@@ -6,7 +6,7 @@ import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.glfw.GLFWMouseButtonCallback;
 
 
-// CConnects with window through call back functions and set the true or false status of the keyboard keys, mouse buttons and the cursor postions.
+// Connects with window through call back functions and set the true or false status of the keyboard keys, mouse buttons and the cursor postions.
 public class Input {
 
     private static boolean[] keys = new boolean[GLFW.GLFW_KEY_LAST];

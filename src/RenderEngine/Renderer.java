@@ -61,7 +61,7 @@ public class Renderer {
     // Window's width, height
     // Field of View , Near plane, Far Plane
     private void  createProjectionMatrix(){
-        float aspectRatio = (float) DisplayManager.getpHeight_().get(0)/(float)DisplayManager.getpHeight_().get(0);
+        float aspectRatio = (float) DisplayManager.getpWidth_().get(0)/(float)DisplayManager.getpHeight_().get(0);
         float y_scale = (float) ((1f/Math.tan(Math.toRadians(FOV/2f)))*aspectRatio);
         float x_scale = y_scale/aspectRatio;
         float frustum_length = FAR_PLANE- NEAR_PLANE;

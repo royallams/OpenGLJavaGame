@@ -129,9 +129,6 @@ public class DisplayManager {
         // bindings available for use.
         GL.createCapabilities();
 
-        // Set the clear color
-//        glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
-
 
         Loader loader = new Loader();
         StaticShader shader = new StaticShader();
@@ -139,9 +136,9 @@ public class DisplayManager {
 
 
         // Create VAO, VBO, Index buffers, and return the final rawmodel (VAO+numberofIndices)
-        RawModel model =  OBJLoader.loadObjModel("stall", loader);
+        RawModel model =  OBJLoader.loadObjModel("stall",loader);
         TexturedModel staticModel = new TexturedModel(model,new ModelTexture(loader.loadTexture("stallTexture.png")));
-        Entity entity = new Entity(staticModel, new Vector3f(0,0,-50),0,0,0,1);// Textured Model with its initial position, translate, rotate , scale value.
+        Entity entity = new Entity(staticModel, new Vector3f(0,0,-10),0,0,0,1);// Textured Model with its initial position, translate, rotate , scale value.
         Camera camera = new Camera();
         Input input = new Input();// Creates static call back functions to handle keyboard, mouse and the cursor
 

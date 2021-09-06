@@ -27,11 +27,13 @@ public class Loader {
 
 
     // Load the vertices, textures and the indices data to the VAO of the GPU.
-    public RawModel loadToVAO(float[] positions, float [] textureCoords, int[] indices){
+    public RawModel loadToVAO(float[] positions, float [] textureCoords,float [] normals, int[] indices){
         int vaoID = createVAO();// Create VAO
         bindIndicesBuffer(indices);//Create Index buffers.
         storeDataInAttributeList(0,3,positions );// Create VBO to store position and pass it to opengl
         storeDataInAttributeList(1,2,textureCoords );// Create VBO to store position and pass it to opengl
+        storeDataInAttributeList(2,3,normals );// Create VBO to store position and pass it to opengl
+
         unbindVAO();// Unbind the VAO
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);//Unbind the VBO
 

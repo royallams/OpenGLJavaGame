@@ -3,6 +3,7 @@ package RenderEngine;
 
         import Entities.Camera;
         import Entities.Entity;
+        import Entities.Light;
         import Models.RawModel;
         import Models.TexturedModel;
         import Shaders.StaticShader;
@@ -133,12 +134,12 @@ public class DisplayManager {
         Loader loader = new Loader();
         StaticShader shader = new StaticShader();
         Renderer renderer = new Renderer(shader);
-
+        Light light = new Light(new Vector3f(0,10,-10),new Vector3f(1,1,1));
 
         // Create VAO, VBO, Index buffers, and return the final rawmodel (VAO+numberofIndices)
-        RawModel model =  OBJLoader.loadObjModel("stall",loader);
+        RawModel model =  OBJLoader.loadObjModel("dragon",loader);
         TexturedModel staticModel = new TexturedModel(model,new ModelTexture(loader.loadTexture("stallTexture.png")));
-        Entity entity = new Entity(staticModel, new Vector3f(0,0,-10),0,0,0,1);// Textured Model with its initial position, translate, rotate , scale value.
+        Entity entity = new Entity(staticModel, new Vector3f(0,0,-15),0,0,0,1);// Textured Model with its initial position, translate, rotate , scale value.
         Camera camera = new Camera();
         Input input = new Input();// Creates static call back functions to handle keyboard, mouse and the cursor
 
@@ -153,6 +154,7 @@ public class DisplayManager {
 //            entity.increaseRotation(0,0,-0.002f);
             renderer.prepare();
             shader.start();// Use the shader program
+            shader.loadLight(light);
             shader.loadViewMatrix(camera);// This takes the camera , camera information is the View, through that it creates a view matrix and loads it to the GPU. uniform
             renderer.render(entity, shader);
             shader.stop();// Dont use the shader program

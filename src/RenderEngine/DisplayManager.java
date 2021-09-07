@@ -16,6 +16,9 @@ package RenderEngine;
         import org.lwjgl.util.vector.Vector3f;
 
         import java.nio.*;
+        import java.util.ArrayList;
+        import java.util.List;
+        import java.util.Random;
 
         import static org.lwjgl.glfw.Callbacks.*;
         import static org.lwjgl.glfw.GLFW.*;
@@ -132,8 +135,6 @@ public class DisplayManager {
 
 
         Loader loader = new Loader();
-        StaticShader shader = new StaticShader();
-        Renderer renderer = new Renderer(shader);
         Light light = new Light(new Vector3f(0,0,-10),new Vector3f(1,1,1));
 
         // Create VAO, VBO, Index buffers, and return the final rawmodel (VAO+numberofIndices)
@@ -143,35 +144,48 @@ public class DisplayManager {
         texture.setShineDamper(10);
         texture.setReflectivity(1);
 
-        Entity entity = new Entity(staticModel, new Vector3f(0,0,-15),0,0,0,1);// Textured Model with its initial position, translate, rotate , scale value.
         Camera camera = new Camera();
         Input input = new Input();// Creates static call back functions to handle keyboard, mouse and the cursor
 
+        // List of random entities
+        List<Entity> allDragons = new ArrayList<Entity>();
+        Random random = new Random();
 
+        for(int i =0; i<5;i++) {
+            float x = random.nextFloat() * 100 -50;
+            float y = random.nextFloat() * 100 -50;
+            float z = random.nextFloat() * -300;
+            allDragons.add(new Entity(staticModel,new Vector3f(x,y,z),random.nextFloat()*180f,random.nextFloat() *180f,0f,1f));
+        }
+
+
+
+
+
+
+        MasterRenderer masterRenderer = new MasterRenderer();
         // Run the rendering loop until the user has attempted to close
         // the window or has pressed the ESCAPE key.
         while ( !glfwWindowShouldClose(window) ) {
-//            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
-            entity.increaseRotation(0,1,0);
+
             camera.move();
-//            entity.increasePosition(0,0,-0.002f);
-//            entity.increaseRotation(0,0,-0.002f);
-            renderer.prepare();
-            shader.start();// Use the shader program
-            shader.loadLight(light);
-            shader.loadViewMatrix(camera);// This takes the camera , camera information is the View, through that it creates a view matrix and loads it to the GPU. uniform
-            renderer.render(entity, shader);
-            shader.stop();// Dont use the shader program
+
+            // First process the entities to its textured Model
+            for(Entity dragon : allDragons){
+                masterRenderer.processEntity(dragon);
+             }
+
+            //Master Rendering Finally
+            masterRenderer.render(light,camera);
+
+
             glfwSwapBuffers(window); // swap the color buffers
-
-
-
             // Poll for window events. The key callback above will only be
             // invoked during this call.
             glfwPollEvents();
         }
 
-        shader.cleanUp();
+        masterRenderer.cleanUp();
         loader.cleanUp();
         input.destroy();//Cleanup callback buffers after use. This is not a static function.
 

@@ -134,11 +134,15 @@ public class DisplayManager {
         Loader loader = new Loader();
         StaticShader shader = new StaticShader();
         Renderer renderer = new Renderer(shader);
-        Light light = new Light(new Vector3f(0,10,-10),new Vector3f(1,1,1));
+        Light light = new Light(new Vector3f(0,0,-10),new Vector3f(1,1,1));
 
         // Create VAO, VBO, Index buffers, and return the final rawmodel (VAO+numberofIndices)
         RawModel model =  OBJLoader.loadObjModel("dragon",loader);
         TexturedModel staticModel = new TexturedModel(model,new ModelTexture(loader.loadTexture("stallTexture.png")));
+        ModelTexture texture = staticModel.getTexture();
+        texture.setShineDamper(10);
+        texture.setReflectivity(1);
+
         Entity entity = new Entity(staticModel, new Vector3f(0,0,-15),0,0,0,1);// Textured Model with its initial position, translate, rotate , scale value.
         Camera camera = new Camera();
         Input input = new Input();// Creates static call back functions to handle keyboard, mouse and the cursor
@@ -149,7 +153,7 @@ public class DisplayManager {
         while ( !glfwWindowShouldClose(window) ) {
 //            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
             entity.increaseRotation(0,1,0);
-//            camera.move();
+            camera.move();
 //            entity.increasePosition(0,0,-0.002f);
 //            entity.increaseRotation(0,0,-0.002f);
             renderer.prepare();

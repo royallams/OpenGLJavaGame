@@ -5,27 +5,93 @@ import Entities.Entity;
 import Entities.Light;
 import Models.TexturedModel;
 import Shaders.StaticShader;
+import Shaders.TerrainShader;
+import Terrains.Terrain;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.vector.Matrix4f;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.lwjgl.opengl.GL11.GL_BACK;
+import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
+
 public class MasterRenderer {
 
-    private StaticShader shader = new StaticShader();
-    private Renderer renderer = new Renderer(shader);
+    private static final float FOV = 70;
+    private static final float NEAR_PLANE = 0.1f;
+    private static final float FAR_PLANE = 1000;
 
     private Map<TexturedModel, List<Entity>> entities = new HashMap<TexturedModel, List<Entity>>();
+    private  Matrix4f projectionMatrix;
 
+    private StaticShader shader = new StaticShader();
+    private EntityRenderer renderer ;
+
+
+    private TerrainShader terrainShader = new TerrainShader();
+    private TerrainRenderer terrainRenderer ;
+    private List<Terrain> terrains = new ArrayList<Terrain>();
+
+
+    public MasterRenderer(){
+        GL11.glEnable(GL11.GL_CULL_FACE);
+        GL11.glCullFace(GL_BACK);
+        createProjectionMatrix();
+        renderer = new EntityRenderer(shader,projectionMatrix);
+        terrainRenderer = new TerrainRenderer(terrainShader,projectionMatrix);
+
+    }
     public void render(Light sun, Camera camera){
-        renderer.prepare();
+        prepare();
         shader.start();
         shader.loadLight(sun);
         shader.loadViewMatrix(camera);
         renderer.render(entities);
         shader.stop();
+
+        terrainShader.start();
+        terrainShader.loadLight(sun);
+        terrainShader.loadViewMatrix(camera);
+        terrainRenderer.render(terrains);
+        terrainShader.stop();
+        terrains.clear();
         entities.clear();
+
+    }
+
+
+    public void processTerrain(Terrain terrain){
+        terrains.add(terrain);
+    }
+
+    public void prepare(){// These are for clear the buffers and preparing initial state for rendering
+        GL11.glEnable(GL_DEPTH_TEST); // clear the framebuffer
+        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT| GL11.GL_DEPTH_BUFFER_BIT);
+        GL11.glClearColor(1,0,0,1);
+//        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
+
+    }
+
+    // These are the steps to Create projection matrix.
+    // The inputs are
+    // Window's width, height
+    // Field of View , Near plane, Far Plane
+    private void  createProjectionMatrix(){
+        float aspectRatio = (float) DisplayManager.getpWidth_().get(0)/(float)DisplayManager.getpHeight_().get(0);
+        float y_scale = (float) ((1f/Math.tan(Math.toRadians(FOV/2f)))*aspectRatio);
+        float x_scale = y_scale/aspectRatio;
+        float frustum_length = FAR_PLANE- NEAR_PLANE;
+
+        projectionMatrix = new Matrix4f();
+        projectionMatrix.m00 = x_scale;
+        projectionMatrix.m01 = y_scale;
+        projectionMatrix.m22 = -((FAR_PLANE+NEAR_PLANE)/ frustum_length);
+        projectionMatrix.m23 = -1;
+        projectionMatrix.m32 = -((2* NEAR_PLANE *FAR_PLANE)/frustum_length);
+        projectionMatrix.m33 = 0;
 
     }
 
@@ -44,7 +110,9 @@ public class MasterRenderer {
     }
 
     public void cleanUp(){
+
         shader.cleanUp();
+        terrainShader.cleanUp();
     }
 
 

@@ -7,6 +7,7 @@ package RenderEngine;
         import Models.RawModel;
         import Models.TexturedModel;
         import Shaders.StaticShader;
+        import Terrains.Terrain;
         import Textures.ModelTexture;
         import ToolSet.Input;
         import org.lwjgl.*;
@@ -135,28 +136,39 @@ public class DisplayManager {
 
 
         Loader loader = new Loader();
-        Light light = new Light(new Vector3f(0,0,-10),new Vector3f(1,1,1));
+        Light light = new Light(new Vector3f(3000,2000,2000),new Vector3f(1,1,1));
 
         // Create VAO, VBO, Index buffers, and return the final rawmodel (VAO+numberofIndices)
-        RawModel model =  OBJLoader.loadObjModel("dragon",loader);
+        RawModel model =  OBJLoader.loadObjModel("stall",loader);
         TexturedModel staticModel = new TexturedModel(model,new ModelTexture(loader.loadTexture("stallTexture.png")));
         ModelTexture texture = staticModel.getTexture();
         texture.setShineDamper(10);
         texture.setReflectivity(1);
 
+        Terrain terrain = new Terrain(0,-1,loader,new ModelTexture(loader.loadTexture("grass.png")));
+        Terrain terrain2 = new Terrain(-1,-1,loader,new ModelTexture(loader.loadTexture("grass.png")));
+
+        Entity entity = new Entity(staticModel, new Vector3f(0,0,-25),0,0,0,1);
+
         Camera camera = new Camera();
         Input input = new Input();// Creates static call back functions to handle keyboard, mouse and the cursor
 
         // List of random entities
-        List<Entity> allDragons = new ArrayList<Entity>();
-        Random random = new Random();
-
-        for(int i =0; i<5;i++) {
-            float x = random.nextFloat() * 100 -50;
-            float y = random.nextFloat() * 100 -50;
-            float z = random.nextFloat() * -300;
-            allDragons.add(new Entity(staticModel,new Vector3f(x,y,z),random.nextFloat()*180f,random.nextFloat() *180f,0f,1f));
-        }
+//        List<Entity> allDragons = new ArrayList<Entity>();
+//        Random random = new Random();
+//
+//        for(int i =0; i<1;i++) {
+////            float x = random.nextFloat() * 100 -50;
+////            float y = random.nextFloat() * 100 -50;
+////            float z = random.nextFloat() * -300;
+////
+//            float x = 0;
+//            float y = -10;
+//            float z = -20;
+//            allDragons.add(new Entity(staticModel,new Vector3f(x,y,z),0,0,0,1f));
+//
+////            allDragons.add(new Entity(staticModel,new Vector3f(x,y,z),random.nextFloat()*180f,random.nextFloat() *180f,0f,1f));
+//        }
 
 
 
@@ -167,13 +179,17 @@ public class DisplayManager {
         // Run the rendering loop until the user has attempted to close
         // the window or has pressed the ESCAPE key.
         while ( !glfwWindowShouldClose(window) ) {
-
+            entity.increaseRotation(0,1,0);
             camera.move();
 
+
+            masterRenderer.processTerrain(terrain);
+            masterRenderer.processTerrain(terrain2);
+            masterRenderer.processEntity(entity);
             // First process the entities to its textured Model
-            for(Entity dragon : allDragons){
-                masterRenderer.processEntity(dragon);
-             }
+//            for(Entity dragon : allDragons){
+//                masterRenderer.processEntity(dragon);
+//             }
 
             //Master Rendering Finally
             masterRenderer.render(light,camera);

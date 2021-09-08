@@ -19,16 +19,16 @@ public class Camera {
         // Since we are moving the world , the values passed are negative of the actual value.
 
         if (Input.isKeyDown(GLFW.GLFW_KEY_W)){
-            position.z -= 0.02f; // Come Near
+            position.z -= 0.11f; // Come Near
         }
         if (Input.isKeyDown(GLFW.GLFW_KEY_S)){
-            position.z += 0.02f; //Go Far
+            position.z += 0.11f; //Go Far
         }
         if (Input.isKeyDown(GLFW.GLFW_KEY_D)){
-            position.x -= 0.02f; //Go right
+            position.x -= 0.11f; //Go right
         }
         if (Input.isKeyDown(GLFW.GLFW_KEY_A)){
-            position.x += 0.02f;// Go Left
+            position.x += 0.11f;// Go Left
         }
     }
     public Vector3f getPosition() {

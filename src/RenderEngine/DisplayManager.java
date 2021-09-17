@@ -9,6 +9,8 @@ package RenderEngine;
         import Shaders.StaticShader;
         import Terrains.Terrain;
         import Textures.ModelTexture;
+        import Textures.TerrainTexture;
+        import Textures.TerrainTexturePack;
         import ToolSet.Input;
         import org.lwjgl.*;
         import org.lwjgl.glfw.*;
@@ -140,11 +142,11 @@ public class DisplayManager {
 
         // Create VAO, VBO, Index buffers, and return the final rawmodel (VAO+numberofIndices)
         RawModel model =  OBJLoader.loadObjModel("tree",loader);
-        TexturedModel staticModel = new TexturedModel(model,new ModelTexture(loader.loadTexture("tree.png")));
-        TexturedModel grass = new TexturedModel(OBJLoader.loadObjModel("grassModel", loader),new ModelTexture(loader.loadTexture("grassTexture.png")));
+        TexturedModel staticModel = new TexturedModel(model,new ModelTexture(loader.loadTexture("tree")));
+        TexturedModel grass = new TexturedModel(OBJLoader.loadObjModel("grassModel", loader),new ModelTexture(loader.loadTexture("grassTexture")));
         grass.getTexture().setHasTransparency(true);
         grass.getTexture().setUseFakeLighting(true);
-        TexturedModel fern = new TexturedModel(OBJLoader.loadObjModel("fern",loader),new ModelTexture(loader.loadTexture("fern.png")));
+        TexturedModel fern = new TexturedModel(OBJLoader.loadObjModel("fern",loader),new ModelTexture(loader.loadTexture("fern")));
         fern.getTexture().setHasTransparency(true);
 
 
@@ -153,10 +155,21 @@ public class DisplayManager {
         texture.setShineDamper(10);
         texture.setReflectivity(1);
 
-        Terrain terrain = new Terrain(0,-1,loader,new ModelTexture(loader.loadTexture("grass.png")));
-        Terrain terrain2 = new Terrain(-1,-1,loader,new ModelTexture(loader.loadTexture("grass.png")));
 
-//        Entity entity = new Entity(staticModel, new Vector3f(0,0,-25),0,0,0,1);
+        //***************** TERRAIN TEXTURE MULTI TEXTURE INPUTS************
+
+
+        TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("grassy"));
+        TerrainTexture rTexture = new TerrainTexture(loader.loadTexture("dirt"));
+        TerrainTexture gTexture = new TerrainTexture(loader.loadTexture("pinkFlowers"));
+        TerrainTexture bTexture = new TerrainTexture(loader.loadTexture("path"));
+
+        TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, rTexture, gTexture,bTexture);
+        TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("blendMap"));
+
+
+        Terrain terrain = new Terrain(0,-1,loader, texturePack, blendMap);
+        Terrain terrain2 = new Terrain(-1,-1,loader, texturePack, blendMap);
 
         Camera camera = new Camera();
         Input input = new Input();// Creates static call back functions to handle keyboard, mouse and the cursor
@@ -182,7 +195,6 @@ public class DisplayManager {
         // Run the rendering loop until the user has attempted to close
         // the window or has pressed the ESCAPE key.
         while ( !glfwWindowShouldClose(window) ) {
-//            entity.increaseRotation(0,1,0);
             camera.move();
 
 

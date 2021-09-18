@@ -4,6 +4,7 @@ package RenderEngine;
         import Entities.Camera;
         import Entities.Entity;
         import Entities.Light;
+        import Entities.Player;
         import Models.RawModel;
         import Models.TexturedModel;
         import Shaders.StaticShader;
@@ -12,11 +13,13 @@ package RenderEngine;
         import Textures.TerrainTexture;
         import Textures.TerrainTexturePack;
         import ToolSet.Input;
+        import jdk.nashorn.internal.objects.NativeDate;
         import org.lwjgl.*;
         import org.lwjgl.glfw.*;
         import org.lwjgl.opengl.*;
         import org.lwjgl.system.*;
         import org.lwjgl.util.vector.Vector3f;
+        import org.newdawn.slick.tests.TestUtils;
 
         import java.nio.*;
         import java.util.ArrayList;
@@ -31,12 +34,16 @@ package RenderEngine;
 
 public class DisplayManager {
 
+
     // The window handle
     private long window;
     static IntBuffer pWidth_;
     static IntBuffer pHeight_;
 
     static Input input;
+
+    private  static double lastFrameTime;
+    private static double delta;
 
     public void run() {
         System.out.println("Hello LWJGL " + Version.getVersion() + "!");
@@ -126,6 +133,11 @@ public class DisplayManager {
 
         // Make the window visible
         glfwShowWindow(window);
+
+
+        // INTIAL CREATION TIME
+
+        lastFrameTime = getCurrentTime();
     }
 
     private void loop() {
@@ -138,7 +150,7 @@ public class DisplayManager {
 
 
         Loader loader = new Loader();
-        Light light = new Light(new Vector3f(3000,2000,2000),new Vector3f(1,1,1));
+        Light light = new Light(new Vector3f(0,100,0),new Vector3f(1,1,1));
 
         // Create VAO, VBO, Index buffers, and return the final rawmodel (VAO+numberofIndices)
         RawModel model =  OBJLoader.loadObjModel("tree",loader);
@@ -152,8 +164,8 @@ public class DisplayManager {
 
 
         ModelTexture texture = staticModel.getTexture();
-        texture.setShineDamper(10);
-        texture.setReflectivity(1);
+        texture.setShineDamper(0);
+        texture.setReflectivity(0);
 
 
         //***************** TERRAIN TEXTURE MULTI TEXTURE INPUTS************
@@ -186,7 +198,13 @@ public class DisplayManager {
 
         }
 
+        RawModel bunnyModel = OBJLoader.loadObjModel("stanfordBunny", loader);
+        TexturedModel stanfordBunny = new TexturedModel(bunnyModel, new ModelTexture(loader.loadTexture("white")));
 
+
+        Player player = new Player(stanfordBunny, new Vector3f(100,10,-50), 0, 0,0,1);
+        player.getModel().getTexture().setReflectivity(0);
+        player.getModel().getTexture().setShineDamper(0);
 
 
 
@@ -195,9 +213,9 @@ public class DisplayManager {
         // Run the rendering loop until the user has attempted to close
         // the window or has pressed the ESCAPE key.
         while ( !glfwWindowShouldClose(window) ) {
-            camera.move();
-
-
+//            camera.move();
+            player.move();
+            masterRenderer.processEntity(player);
             masterRenderer.processTerrain(terrain);
             masterRenderer.processTerrain(terrain2);
 //            masterRenderer.processEntity(entity);
@@ -208,12 +226,9 @@ public class DisplayManager {
 
             //Master Rendering Finally
             masterRenderer.render(light,camera);
+            UpdateDisplay();
 
 
-            glfwSwapBuffers(window); // swap the color buffers
-            // Poll for window events. The key callback above will only be
-            // invoked during this call.
-            glfwPollEvents();
         }
 
         masterRenderer.cleanUp();
@@ -222,11 +237,31 @@ public class DisplayManager {
 
     }
 
+    public void UpdateDisplay(){
+        glfwSwapBuffers(window); // swap the color buffers
+        // Poll for window events. The key callback above will only be
+        // invoked during this call.
+        glfwPollEvents();
+
+        double currentFrameTime = getCurrentTime();
+        delta = (currentFrameTime - lastFrameTime);//in sec
+        lastFrameTime = currentFrameTime;
+    }
+
+
+
+    public  static  double getFrameTimeSeconds(){
+        return delta;
+    }
     public static  IntBuffer getpWidth_() {
         return pWidth_;
     }
 
     public static  IntBuffer getpHeight_() {
         return pHeight_;
+    }
+
+    private static  double getCurrentTime(){
+        return GLFW.glfwGetTime();
     }
 }

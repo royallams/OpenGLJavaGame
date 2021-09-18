@@ -7,36 +7,36 @@ import org.lwjgl.util.vector.Vector3f;
 import java.awt.*;
 
 public class Camera {
-    private Vector3f position = new Vector3f(0,10,0);
+    private Vector3f position = new Vector3f(100,50,0);
     private float pitch = 0;// Tell the up and down movement
     private float yaw = 0; // Tells the left and right movement
     private float roll = 0;
 
 
 
-    public  void move() {
-
-        // Since we are moving the world , the values passed are negative of the actual value.
-
-        if (Input.isKeyDown(GLFW.GLFW_KEY_W)){
-            position.z -= 0.71f; // Come Near
-        }
-        if (Input.isKeyDown(GLFW.GLFW_KEY_S)){
-            position.z += 0.71f; //Go Far
-        }
-        if (Input.isKeyDown(GLFW.GLFW_KEY_D)){
-            position.x += 0.71f; //Go right
-        }
-        if (Input.isKeyDown(GLFW.GLFW_KEY_A)){
-            position.x -= 0.71f;// Go Left
-        }
-        if (Input.isKeyDown(GLFW.GLFW_KEY_Z)){
-            position.y -= 0.71f;// Go Left
-        }
-        if (Input.isKeyDown(GLFW.GLFW_KEY_X)){
-            position.y += 0.71f;// Go Left
-        }
-    }
+//    public  void move() {
+//
+//        // Since we are moving the world , the values passed are negative of the actual value.
+//
+//        if (Input.isKeyDown(GLFW.GLFW_KEY_W)){
+//            position.z -= 0.71f; // Come Near
+//        }
+//        if (Input.isKeyDown(GLFW.GLFW_KEY_S)){
+//            position.z += 0.71f; //Go Far
+//        }
+//        if (Input.isKeyDown(GLFW.GLFW_KEY_D)){
+//            position.x += 0.71f; //Go right
+//        }
+//        if (Input.isKeyDown(GLFW.GLFW_KEY_A)){
+//            position.x -= 0.71f;// Go Left
+//        }
+//        if (Input.isKeyDown(GLFW.GLFW_KEY_Z)){
+//            position.y -= 0.71f;// Go Left
+//        }
+//        if (Input.isKeyDown(GLFW.GLFW_KEY_X)){
+//            position.y += 0.71f;// Go Left
+//        }
+//    }
     public Vector3f getPosition() {
         return position;
     }

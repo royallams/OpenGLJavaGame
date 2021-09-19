@@ -1,9 +1,8 @@
 package ToolSet;
 
-import org.lwjgl.glfw.GLFW;
-import org.lwjgl.glfw.GLFWCursorPosCallback;
-import org.lwjgl.glfw.GLFWKeyCallback;
-import org.lwjgl.glfw.GLFWMouseButtonCallback;
+import org.lwjgl.assimp.AIVector2D;
+import org.lwjgl.glfw.*;
+import org.lwjgl.util.vector.Vector2f;
 
 
 // Connects with window through call back functions and set the true or false status of the keyboard keys, mouse buttons and the cursor postions.
@@ -11,12 +10,20 @@ public class Input {
 
     private static boolean[] keys = new boolean[GLFW.GLFW_KEY_LAST];
     private static boolean[] buttons = new boolean[GLFW.GLFW_MOUSE_BUTTON_LAST];
-    private static double mouseX, mouseY;
+    private static double mouseX = 0, mouseY = 0;
+    private static double previousMouseX = 0, previousMouseY  = 0;
+
+    private static double dmouseX = 0   , dmouseY = 0;
+
+    private static double xScrollPosition  , yScrollPosition = 0 ;
+    private static double dxScrollPosition  = 0, dyScrollPosition = 0;
 
 
      private GLFWKeyCallback keyboard;
      private GLFWCursorPosCallback mouseMove;
      private GLFWMouseButtonCallback mouseButtons;
+    private GLFWScrollCallback mouseScroll;
+
 
     public static boolean isKeyDown(int key){
         return keys[key];
@@ -43,7 +50,9 @@ public class Input {
     public GLFWMouseButtonCallback getMouseButtonsCallBack() {
         return mouseButtons;
     }
-
+    public GLFWScrollCallback getMouseScrollCallBack() {
+        return mouseScroll;
+    }
     public Input(){
         keyboard = new GLFWKeyCallback() {
             @Override
@@ -69,5 +78,51 @@ public class Input {
             }
         };
 
+        mouseScroll = new GLFWScrollCallback() {
+            @Override
+            public void invoke(long window, double xoffset, double yoffset) {
+                xScrollPosition = xoffset;
+                yScrollPosition = yoffset;
+            }
+        };
+
+
     }
+
+    public void updateMouseScroll(){
+
+
+        dxScrollPosition = xScrollPosition;
+        dyScrollPosition = yScrollPosition;
+
+        xScrollPosition = 0;
+        yScrollPosition = 0;
+    }
+
+    public void updateMouseCursorPosition(){
+
+
+        dmouseX = mouseX- previousMouseX;
+        dmouseY = mouseY- previousMouseY;
+
+        previousMouseX = mouseX;
+        previousMouseY = mouseY;
+
+    }
+
+
+    public static double getDWheel(){
+        return dyScrollPosition;
+    }
+
+    public static double getDY(){
+        return dmouseY;
+    }
+
+    public static double getDX(){
+        return dmouseX;
+    }
+
+
+
 }

@@ -45,6 +45,10 @@ public class DisplayManager {
     private  static double lastFrameTime;
     private static double delta;
 
+    private  static double lastMouseScrollX, getLastMouseScrollY;
+
+
+
     public void run() {
         System.out.println("Hello LWJGL " + Version.getVersion() + "!");
 
@@ -84,7 +88,7 @@ public class DisplayManager {
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
         // Create the window
-        window = glfwCreateWindow(1200, 720, "Hello World!", NULL, NULL);
+        window = glfwCreateWindow(1200, 750, "Hello World!", NULL, NULL);
         if ( window == NULL )
             throw new RuntimeException("Failed to create the GLFW window");
 
@@ -124,6 +128,7 @@ public class DisplayManager {
         GLFW.glfwSetKeyCallback(window,input.getKeyboardCallback());
         GLFW.glfwSetCursorPosCallback(window,input.getMouseMoveCallBack());
         GLFW.glfwSetMouseButtonCallback(window,input.getMouseButtonsCallBack());
+        GLFW.glfwSetScrollCallback(window,input.getMouseScrollCallBack());
 
 
 
@@ -183,7 +188,6 @@ public class DisplayManager {
         Terrain terrain = new Terrain(0,-1,loader, texturePack, blendMap);
         Terrain terrain2 = new Terrain(-1,-1,loader, texturePack, blendMap);
 
-        Camera camera = new Camera();
         Input input = new Input();// Creates static call back functions to handle keyboard, mouse and the cursor
 
         // List of random entities
@@ -198,13 +202,16 @@ public class DisplayManager {
 
         }
 
-        RawModel bunnyModel = OBJLoader.loadObjModel("stanfordBunny", loader);
-        TexturedModel stanfordBunny = new TexturedModel(bunnyModel, new ModelTexture(loader.loadTexture("white")));
+        RawModel bunnyModel = OBJLoader.loadObjModel("person", loader);
+        TexturedModel stanfordBunny = new TexturedModel(bunnyModel, new ModelTexture(loader.loadTexture("playerTexture")));
 
 
         Player player = new Player(stanfordBunny, new Vector3f(100,10,-50), 0, 0,0,1);
         player.getModel().getTexture().setReflectivity(0);
         player.getModel().getTexture().setShineDamper(0);
+
+
+        Camera camera = new Camera(player);
 
 
 
@@ -213,7 +220,7 @@ public class DisplayManager {
         // Run the rendering loop until the user has attempted to close
         // the window or has pressed the ESCAPE key.
         while ( !glfwWindowShouldClose(window) ) {
-//            camera.move();
+            camera.move();
             player.move();
             masterRenderer.processEntity(player);
             masterRenderer.processTerrain(terrain);
@@ -246,6 +253,10 @@ public class DisplayManager {
         double currentFrameTime = getCurrentTime();
         delta = (currentFrameTime - lastFrameTime);//in sec
         lastFrameTime = currentFrameTime;
+
+        input.updateMouseScroll();
+        input.updateMouseCursorPosition();
+
     }
 
 

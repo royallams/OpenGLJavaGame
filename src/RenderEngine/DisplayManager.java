@@ -163,14 +163,13 @@ public class DisplayManager {
         TexturedModel grass = new TexturedModel(OBJLoader.loadObjModel("grassModel", loader),new ModelTexture(loader.loadTexture("grassTexture")));
         grass.getTexture().setHasTransparency(true);
         grass.getTexture().setUseFakeLighting(true);
+        grass.getTexture().setShineDamper(10);
+        grass.getTexture().setReflectivity(4);
         TexturedModel fern = new TexturedModel(OBJLoader.loadObjModel("fern",loader),new ModelTexture(loader.loadTexture("fern")));
         fern.getTexture().setHasTransparency(true);
 
 
 
-        ModelTexture texture = staticModel.getTexture();
-        texture.setShineDamper(0);
-        texture.setReflectivity(0);
 
 
         //***************** TERRAIN TEXTURE MULTI TEXTURE INPUTS************
@@ -185,8 +184,9 @@ public class DisplayManager {
         TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("blendMap"));
 
 
-        Terrain terrain = new Terrain(0,-1,loader, texturePack, blendMap);
-        Terrain terrain2 = new Terrain(-1,-1,loader, texturePack, blendMap);
+        Terrain terrain = new Terrain(0,-1,loader, texturePack, blendMap,"heightmap");
+        Terrain terrain2 = new Terrain(-1,-1,loader, texturePack, blendMap,"heightmap");
+
 
         Input input = new Input();// Creates static call back functions to handle keyboard, mouse and the cursor
 

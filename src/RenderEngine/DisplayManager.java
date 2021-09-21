@@ -88,7 +88,7 @@ public class DisplayManager {
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
         // Create the window
-        window = glfwCreateWindow(1200, 750, "Hello World!", NULL, NULL);
+        window = glfwCreateWindow(800, 800, "Hello World!", NULL, NULL);
         if ( window == NULL )
             throw new RuntimeException("Failed to create the GLFW window");
 
@@ -155,18 +155,15 @@ public class DisplayManager {
 
 
         Loader loader = new Loader();
-        Light light = new Light(new Vector3f(0,100,0),new Vector3f(1,1,1));
+        Light light = new Light(new Vector3f(0,10,0),new Vector3f(1,1,1));
 
         // Create VAO, VBO, Index buffers, and return the final rawmodel (VAO+numberofIndices)
         RawModel model =  OBJLoader.loadObjModel("tree",loader);
         TexturedModel staticModel = new TexturedModel(model,new ModelTexture(loader.loadTexture("tree")));
         TexturedModel grass = new TexturedModel(OBJLoader.loadObjModel("grassModel", loader),new ModelTexture(loader.loadTexture("grassTexture")));
-        grass.getTexture().setHasTransparency(true);
-        grass.getTexture().setUseFakeLighting(true);
-        grass.getTexture().setShineDamper(10);
-        grass.getTexture().setReflectivity(4);
         TexturedModel fern = new TexturedModel(OBJLoader.loadObjModel("fern",loader),new ModelTexture(loader.loadTexture("fern")));
         fern.getTexture().setHasTransparency(true);
+        TexturedModel newTree = new TexturedModel(OBJLoader.loadObjModel("lowPolyTree",loader),new ModelTexture(loader.loadTexture("lowPolyTree")));
 
 
 
@@ -194,11 +191,32 @@ public class DisplayManager {
         List<Entity> entities = new ArrayList<Entity>();
         Random random = new Random();
 
-        for(int i =0; i<200;i++) {
+        for(int i =0; i<400;i++) {
 
-            entities.add(new Entity(staticModel,new Vector3f(random.nextFloat()*800-400,0,random.nextFloat()*-600),0,0,0,3));
-            entities.add(new Entity(grass,new Vector3f(random.nextFloat()*800-400,0,random.nextFloat()*-600),0,0,0,3));
-            entities.add(new Entity(fern,new Vector3f(random.nextFloat()*800-400,0,random.nextFloat()*-600),0,0,0,3));
+            if(i%2 == 0){
+                float x  = random.nextFloat() * 800 -400;
+                float z = random.nextFloat() * -600;
+                float y = terrain.getHeightOfTerrain(x,z);
+                entities.add(new Entity(fern, new Vector3f(x,y,z),0,random.nextFloat()*360, 0 ,random.nextFloat() * 0.1f + 0.6f));
+            }
+            if(i % 2 == 0){
+                float x  = random.nextFloat() * 800 -400;
+                float z = random.nextFloat() * -600;
+                float y = terrain.getHeightOfTerrain(x,z);
+                entities.add(new Entity(newTree, new Vector3f(x,y,z),0,random.nextFloat()*360, 0 ,random.nextFloat() * 0.1f + 0.6f));
+
+                x  = random.nextFloat() * 800 -400;
+                z = random.nextFloat() * -600;
+                y = terrain.getHeightOfTerrain(x,z);
+                entities.add(new Entity(staticModel, new Vector3f(x,y,z),0,random.nextFloat()*360, 0 ,random.nextFloat() * 1 + 4));
+
+
+            }
+
+
+//            entities.add(new Entity(staticModel,new Vector3f(random.nextFloat()*800-400,0,random.nextFloat()*-600),0,0,0,3));
+//            entities.add(new Entity(grass,new Vector3f(random.nextFloat()*800-400,0,random.nextFloat()*-600),0,0,0,3));
+//            entities.add(new Entity(fern,new Vector3f(random.nextFloat()*800-400,0,random.nextFloat()*-600),0,0,0,3));
 
         }
 
@@ -221,10 +239,10 @@ public class DisplayManager {
         // the window or has pressed the ESCAPE key.
         while ( !glfwWindowShouldClose(window) ) {
             camera.move();
-            player.move();
+            player.move(terrain);
             masterRenderer.processEntity(player);
             masterRenderer.processTerrain(terrain);
-            masterRenderer.processTerrain(terrain2);
+//            masterRenderer.processTerrain(terrain2);
 //            masterRenderer.processEntity(entity);
             // First process the entities to its textured Model
             for(Entity single_entity : entities){

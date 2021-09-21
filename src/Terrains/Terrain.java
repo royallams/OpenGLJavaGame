@@ -5,8 +5,10 @@ import RenderEngine.Loader;
 import Textures.ModelTexture;
 import Textures.TerrainTexture;
 import Textures.TerrainTexturePack;
+import ToolSet.Maths;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.stb.STBImage;
+import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
 import javax.imageio.ImageIO;
@@ -22,10 +24,11 @@ import static org.lwjgl.stb.STBImage.stbi_load;
 public class Terrain {
 
     private static final float SIZE = 800;
-    private static final float MAX_HEIGHT = 150;//Max terrain height
+    private static final float MAX_HEIGHT = 50;//Max terrain height
     private static final float MAX_PIXEL_COLOUR = 256 * 256 * 256;
 
 
+    private float[][] heights;
 
     private float x;
     private float z;
@@ -41,6 +44,38 @@ public class Terrain {
         this.model = generateTerrain(loader, heightMap );
     }
 
+
+
+    public float getHeightOfTerrain(float worldX, float worldZ){
+        float terrainX = worldX- this.x;
+        float terrainZ = worldZ-this.z;
+        float gridSquareSize = SIZE / ((float) heights.length - 1);
+        int gridX = (int) Math.floor(terrainX / gridSquareSize);
+        int gridZ = (int) Math.floor(terrainZ / gridSquareSize);
+
+        if(gridX >= heights.length -1 || gridZ >= heights.length -1 || gridX <0  || gridZ <0){
+            return 0;
+        }
+
+        float xCoord = (terrainX % gridSquareSize)/ gridSquareSize;
+        float zCoord = (terrainZ % gridSquareSize)/ gridSquareSize;
+        float answer;
+
+        if (xCoord <= (1-zCoord)) {
+            answer = Maths
+                    .barryCentric(new Vector3f(0, heights[gridX][gridZ], 0), new Vector3f(1,
+                            heights[gridX + 1][gridZ], 0), new Vector3f(0,
+                            heights[gridX][gridZ + 1], 1), new Vector2f(xCoord, zCoord));
+        } else {
+            answer = Maths
+                    .barryCentric(new Vector3f(1, heights[gridX + 1][gridZ], 0), new Vector3f(1,
+                            heights[gridX + 1][gridZ + 1], 1), new Vector3f(0,
+                            heights[gridX][gridZ + 1], 1), new Vector2f(xCoord, zCoord));
+        }
+
+        return answer;
+    }
+
     private RawModel generateTerrain(Loader loader, String heightMap){
 
         BufferedImage image = null;
@@ -51,6 +86,7 @@ public class Terrain {
         }
 
         int VERTEX_COUNT = image.getHeight();
+        heights = new float[VERTEX_COUNT][VERTEX_COUNT];
 
 
 
@@ -63,7 +99,9 @@ public class Terrain {
         for(int i=0;i<VERTEX_COUNT;i++){
             for(int j=0;j<VERTEX_COUNT;j++){
                 vertices[vertexPointer*3] = (float)j/((float)VERTEX_COUNT - 1) * SIZE;
-                vertices[vertexPointer*3+1] = getHeight(j,i,image);
+                float height = getHeight(j,i,image);
+                heights[j][i] = height;
+                vertices[vertexPointer*3+1] = height;
                 vertices[vertexPointer*3+2] = (float)i/((float)VERTEX_COUNT - 1) * SIZE;
 
                 Vector3f normal = calculateNormal(j,i, image);

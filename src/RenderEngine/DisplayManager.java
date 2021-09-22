@@ -161,8 +161,8 @@ public class DisplayManager {
         RawModel model =  OBJLoader.loadObjModel("tree",loader);
         TexturedModel staticModel = new TexturedModel(model,new ModelTexture(loader.loadTexture("tree")));
         TexturedModel grass = new TexturedModel(OBJLoader.loadObjModel("grassModel", loader),new ModelTexture(loader.loadTexture("grassTexture")));
-        TexturedModel fern = new TexturedModel(OBJLoader.loadObjModel("fern",loader),new ModelTexture(loader.loadTexture("fern")));
-        fern.getTexture().setHasTransparency(true);
+//        TexturedModel fern = new TexturedModel(OBJLoader.loadObjModel("fern",loader),new ModelTexture(loader.loadTexture("fern")));
+//        fern.getTexture().setHasTransparency(true);
         TexturedModel newTree = new TexturedModel(OBJLoader.loadObjModel("lowPolyTree",loader),new ModelTexture(loader.loadTexture("lowPolyTree")));
 
 
@@ -170,6 +170,10 @@ public class DisplayManager {
 
 
         //***************** TERRAIN TEXTURE MULTI TEXTURE INPUTS************
+
+        ModelTexture fernTextureAtlas = new ModelTexture(loader.loadTexture("fern"));
+        fernTextureAtlas.setNumberOfRows(2);
+        TexturedModel fern = new TexturedModel(OBJLoader.loadObjModel("fern", loader), fernTextureAtlas);
 
 
         TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("grassy"));
@@ -193,11 +197,12 @@ public class DisplayManager {
 
         for(int i =0; i<400;i++) {
 
-            if(i%2 == 0){
+//            if(i%10 == 0){
+            {
                 float x  = random.nextFloat() * 800 -400;
                 float z = random.nextFloat() * -600;
                 float y = terrain.getHeightOfTerrain(x,z);
-                entities.add(new Entity(fern, new Vector3f(x,y,z),0,random.nextFloat()*360, 0 ,random.nextFloat() * 0.1f + 0.6f));
+                entities.add(new Entity(fern,random.nextInt(4), new Vector3f(x,y,z),0,random.nextFloat()*360, 0 ,random.nextFloat() * 0.1f + 0.6f));
             }
             if(i % 2 == 0){
                 float x  = random.nextFloat() * 800 -400;
@@ -242,7 +247,7 @@ public class DisplayManager {
             player.move(terrain);
             masterRenderer.processEntity(player);
             masterRenderer.processTerrain(terrain);
-//            masterRenderer.processTerrain(terrain2);
+            masterRenderer.processTerrain(terrain2);
 //            masterRenderer.processEntity(entity);
             // First process the entities to its textured Model
             for(Entity single_entity : entities){

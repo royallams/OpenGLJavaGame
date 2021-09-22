@@ -9,6 +9,16 @@ public class ModelTexture {
     private boolean useFakeLighting = false;
 
 
+    private int numberOfRows = 1;
+
+    public int getNumberOfRows() {
+        return numberOfRows;
+    }
+
+    public void setNumberOfRows(int numberOfRows) {
+        this.numberOfRows = numberOfRows;
+    }
+
     public boolean isHasTransparency() {
         return hasTransparency;
     }
